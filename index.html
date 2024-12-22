@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <script>
+        // JS Code
+        async function fetchData() {
+            const response = await fetch("GLB.Ts+dSST.csv");
+            const data = await response.text();
+            const rows = data.split("\n").slice(1);
+            const labels = [];
+            const values = [];
+
+            rows.forEach(row => {
+                const cols = row.split(",");
+                labels.push(cols[0]); 
+                values.push(parseFloat(cols[1])); 
+            });
+
+            return { labels, values };
+        }
+        async function createChart() {
+            const { labels, values } = await fetchData();
+            // CSS code
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature over Years',
+                        data: values,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        pointStyle: 'circle',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Prajwol Pandey Graph of Global-mean montly, seasonal, and annual means',
+                            font: {
+                                size: 24
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart();
+    </script>
+</body>
+</html>
